@@ -1348,7 +1348,7 @@ export default function Ripline() {
         </div>
         <div className="foot-bottom">
           <div className="foot-disclaimer">RIPLINE DEALS IN AN ORIGINAL, FICTIONAL CARD SET (“APEX”). NOT AFFILIATED WITH NINTENDO, WIZARDS OF THE COAST, BANDAI, OR ANY REAL TRADING-CARD BRAND.</div>
-          <div className="foot-note">Demo build · no real payments, inventory, or shipping · © 2026 RIPLINE</div>
+          <div className="foot-note">© 2026 RIPLINE — demo build</div>
         </div>
       </footer>
     </div>
