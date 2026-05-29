@@ -884,6 +884,25 @@ export default function Ripline() {
     soundOn.current = soundUi;
   }, [soundUi]);
 
+  // fade-and-rise landing sections into view as they scroll up
+  useEffect(() => {
+    if (screen !== "intro") return;
+    const els = Array.from(document.querySelectorAll(".intro-main .reveal"));
+    if (!els.length) return;
+    const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || !("IntersectionObserver" in window)) {
+      els.forEach((el) => el.classList.add("in"));
+      return;
+    }
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [screen]);
+
   return (
     <div className="rl-root">
       <style>{CSS}</style>
@@ -919,7 +938,7 @@ export default function Ripline() {
       {screen === "intro" && (
         <main className="rl-main intro-main">
           {/* hero */}
-          <section className="lp-hero">
+          <section className="lp-hero reveal">
             <div className="lp-hero-text">
               <div className="hero-eyebrow">REAL CARDS · PROVABLY FAIR · SHIPPED TO YOU</div>
               <h1 className="intro-title">Open packs online.<br /><span>Pull the real cards.</span></h1>
@@ -944,7 +963,7 @@ export default function Ripline() {
           </section>
 
           {/* how it works */}
-          <section className="lp-section">
+          <section className="lp-section reveal">
             <div className="section-head"><h2>How it works</h2><span className="section-note">four steps</span></div>
             <div className="how-grid">
               {[
@@ -963,7 +982,7 @@ export default function Ripline() {
           </section>
 
           {/* benefits */}
-          <section className="lp-section">
+          <section className="lp-section reveal">
             <div className="section-head"><h2>An experience that feels real</h2><span className="section-note">why RIPLINE</span></div>
             <div className="benefits">
               {[
@@ -986,7 +1005,7 @@ export default function Ripline() {
           </section>
 
           {/* featured packs */}
-          <section className="lp-section">
+          <section className="lp-section reveal">
             <div className="section-head"><h2>Featured packs</h2><span className="section-note">{PACKS.length} live now</span></div>
             <div className="feat-row">
               {PACKS.map((p) => (
@@ -999,7 +1018,7 @@ export default function Ripline() {
           </section>
 
           {/* vault / shipping */}
-          <section className="lp-section">
+          <section className="lp-section reveal">
             <div className="ship-grid">
               <div className="ship-visual">
                 <div className="ship-emoji">🗄️</div>
@@ -1023,7 +1042,7 @@ export default function Ripline() {
           </section>
 
           {/* faq */}
-          <section className="lp-section">
+          <section className="lp-section reveal">
             <div className="section-head"><h2>Frequently asked</h2><span className="section-note">the basics</span></div>
             <div className="faq">
               {FAQ.map((f, i) => (
@@ -1038,7 +1057,7 @@ export default function Ripline() {
           </section>
 
           {/* closing cta */}
-          <section className="lp-cta">
+          <section className="lp-cta reveal">
             <div className="lp-cta-spark">✦</div>
             <h2 className="lp-cta-h">Step into the rip.</h2>
             <p className="lp-cta-sub">No resealed packs. No fake cards. No guesswork — just a fair roll and real cards.</p>
@@ -1901,6 +1920,11 @@ const CSS = `
 /* generic section */
 .lp-section { margin: 68px 0; }
 .lp-section .benefits { margin:0; }
+
+/* scroll-into-view reveal */
+.reveal { opacity:0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.22,.61,.36,1); }
+.reveal.in { opacity:1; transform:none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity:1; transform:none; transition:none; } }
 
 /* how it works */
 .how-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap:16px; }
