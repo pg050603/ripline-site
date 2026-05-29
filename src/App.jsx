@@ -105,6 +105,25 @@ const CARD_IMAGES = {
    ╚══════════════════════════════════════════════════════════════╝ */
 const CARD_BACK = "";
 
+/* ╔══════════════════════════════════════════════════════════════╗
+   ║  ►► PACK WRAPPER ARTWORK ◄◄                                    ║
+   ║                                                                ║
+   ║  The pack "foil" visuals on the landing page. Paste an image  ║
+   ║  URL (or data: URI) to use your own wrapper art; leave ""      ║
+   ║  to keep the generic RIPLINE placeholder foil. If a URL fails  ║
+   ║  to load, it falls back to the placeholder automatically.      ║
+   ║                                                                ║
+   ║  HERO_PACK_IMAGE → the big pack in the landing hero.           ║
+   ║  PACK_IMAGES[id] → the small packs in the "Featured packs"     ║
+   ║                    row (keys match the PACKS ids below).       ║
+   ╚══════════════════════════════════════════════════════════════╝ */
+const HERO_PACK_IMAGE = "";  // landing hero · "APEX · SERIES 1" pack
+const PACK_IMAGES = {
+  rookie:  "",  // Rookie Rip
+  premium: "",  // Apex Premium
+  vault:   "",  // Vault Chase
+};
+
 /* ── House RTP: the ONE knob (a house setting, not a per-roll value).
    Each open rolls a MULTIPLIER from the provably-fair hash; higher multipliers are rarer.
    The mean multiplier is normalized to HOUSE_RTP, so 1−RTP is the long-run house edge.
@@ -531,6 +550,28 @@ function Card({ card, faceUp, size = "md", onClick, dim }) {
   );
 }
 
+/* ---------- pack wrapper foil (image slot + placeholder fallback) ----------
+   Renders a real wrapper image when `image` is a non-empty URL that loads;
+   otherwise falls back to the generic RIPLINE foil (logo + name + count). */
+function PackFoil({ image, name, count = `${CARDS_PER_PACK} CARDS`, className = "", style }) {
+  const [err, setErr] = useState(false);
+  const showImg = image && !err;
+  return (
+    <div className={`pack-foil ${className}`.trim()} style={style}>
+      <div className="pack-shine" />
+      {showImg ? (
+        <img className="pack-img" src={image} alt={`${name} pack`} onError={() => setErr(true)} />
+      ) : (
+        <>
+          <div className="pack-logo">R</div>
+          <div className="pack-name">{name}</div>
+          <div className="pack-count">{count}</div>
+        </>
+      )}
+    </div>
+  );
+}
+
 /* ---------- provably-fair panel + verifier ---------- */
 function FairModal({ commitment, clientSeed, setClientSeed, nonce, revealedSeed, houseRtp, setHouseRtp, onRotate, onClose }) {
   const [vSeed, setVSeed] = useState("");
@@ -898,12 +939,7 @@ export default function Ripline() {
             </div>
             <div className="lp-hero-pack">
               <div className="peel">✦ Peel to open</div>
-              <div className="pack-foil hero-foil" style={{ "--accent": "#3fd07a" }}>
-                <div className="pack-shine" />
-                <div className="pack-logo">R</div>
-                <div className="pack-name">APEX · SERIES 1</div>
-                <div className="pack-count">5 CARDS</div>
-              </div>
+              <PackFoil image={HERO_PACK_IMAGE} name="APEX · SERIES 1" className="hero-foil" style={{ "--accent": "#3fd07a" }} />
             </div>
           </section>
 
@@ -955,12 +991,7 @@ export default function Ripline() {
             <div className="feat-row">
               {PACKS.map((p) => (
                 <button className="feat-pack" key={p.id} style={{ "--accent": p.accent }} onClick={() => setScreen("store")}>
-                  <div className="pack-foil">
-                    <div className="pack-shine" />
-                    <div className="pack-logo">R</div>
-                    <div className="pack-name">{p.name}</div>
-                    <div className="pack-count">5 CARDS</div>
-                  </div>
+                  <PackFoil image={PACK_IMAGES[p.id]} name={p.name} />
                   <div className="feat-meta"><span>{p.name}</span><span className="feat-price">{money(p.price)}</span></div>
                 </button>
               ))}
@@ -1452,6 +1483,7 @@ const CSS = `
 .pack-logo { font-family:'Fredoka'; font-size: 46px; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.5); }
 .pack-name { font-family:'Fredoka'; font-size:15px; letter-spacing:1px; color:#fff; text-align:center; padding:0 8px; }
 .pack-count { font-family:'Space Mono'; font-size:9px; letter-spacing:2px; color: rgba(255,255,255,.7); }
+.pack-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:1; }
 .pack-shine { position:absolute; top:-40%; right:-30%; width:180px; height:180px; border-radius:50%;
   background: radial-gradient(circle, var(--accent), transparent 70%); opacity:.25; filter: blur(20px); pointer-events:none; }
 
