@@ -956,7 +956,13 @@ export default function Ripline() {
                 <span className="hero-chip">🪙 1 coin = $1</span>
               </div>
             </div>
-            <div className="lp-hero-pack">
+            <div
+              className="lp-hero-pack"
+              role="button"
+              tabIndex={0}
+              onClick={() => buyAndOpen(PACKS[0])}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); buyAndOpen(PACKS[0]); } }}
+            >
               <div className="peel">✦ Peel to open</div>
               <PackFoil image={HERO_PACK_IMAGE} name="APEX · SERIES 1" className="hero-foil" style={{ "--accent": "#3fd07a" }} />
             </div>
@@ -1908,7 +1914,9 @@ const CSS = `
 .hero-chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
 .hero-chip { font-family:'Space Mono'; font-size:11px; letter-spacing:.5px; color:#aeb6c9;
   background:var(--surface); border:1px solid var(--border); border-radius:999px; padding:9px 15px; }
-.lp-hero-pack { position:relative; display:flex; flex-direction:column; align-items:center; gap:18px; }
+.lp-hero-pack { position:relative; display:flex; flex-direction:column; align-items:center; gap:18px; cursor:pointer; transition: transform .18s; }
+.lp-hero-pack:hover { transform: translateY(-4px); }
+.lp-hero-pack:focus-visible { outline:2px solid #6be0ff; outline-offset:8px; border-radius:14px; }
 .lp-hero-pack::after { content:''; position:absolute; inset:-30px; z-index:0;
   background: radial-gradient(circle at 50% 45%, rgba(63,208,122,.30), transparent 62%); filter:blur(16px); }
 .peel { position:relative; z-index:2; font-family:'Plus Jakarta Sans'; font-weight:600; font-size:15px; color:#d3dae9; display:flex; align-items:center; gap:8px; }
